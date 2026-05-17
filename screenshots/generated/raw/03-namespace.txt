@@ -1,0 +1,6 @@
+$ kubectl get ns travelo
+
+NAME      STATUS   AGE
+travelo   Active   22m
+
+exit code: 0

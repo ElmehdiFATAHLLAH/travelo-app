@@ -1,0 +1,5 @@
+$ kubectl auth can-i get pods --as=system:serviceaccount:travelo:travelo-deployer -n travelo
+
+yes
+
+exit code: 0

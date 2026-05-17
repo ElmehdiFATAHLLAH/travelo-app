@@ -1,0 +1,10 @@
+$ kubectl get pods -n travelo -o wide
+
+NAME                        READY   STATUS    RESTARTS      AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+backend-6778d5f589-7l788    1/1     Running   3 (20m ago)   22m   10.244.0.22   minikube   <none>           <none>
+backend-6778d5f589-qbks9    1/1     Running   3 (20m ago)   22m   10.244.0.21   minikube   <none>           <none>
+frontend-86bd6d4cd6-67bw8   1/1     Running   0             22m   10.244.0.24   minikube   <none>           <none>
+frontend-86bd6d4cd6-xmb4k   1/1     Running   0             22m   10.244.0.23   minikube   <none>           <none>
+mysql-0                     1/1     Running   0             22m   10.244.0.25   minikube   <none>           <none>
+
+exit code: 0

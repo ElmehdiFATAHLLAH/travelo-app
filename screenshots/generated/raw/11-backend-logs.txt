@@ -1,0 +1,55 @@
+$ kubectl logs -n travelo deploy/backend --tail=50
+
+Found 2 pods, using pod/backend-6778d5f589-qbks9
+        c1 varchar(255),
+        c2 varchar(255),
+        c3 varchar(255),
+        c4 varchar(255),
+        c5 varchar(255),
+        c6 varchar(255),
+        c7 varchar(255),
+        c8 varchar(255),
+        c9 varchar(255),
+        d1 varchar(255),
+        d2 varchar(255),
+        d3 varchar(255),
+        d4 varchar(255),
+        d5 varchar(255),
+        d6 varchar(255),
+        d7 varchar(255),
+        d8 varchar(255),
+        d9 varchar(255),
+        id_flight integer,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    alter table seats 
+       drop index UKhkhwgk6g04eysi4nhhrbd7xpp
+Hibernate: 
+    alter table seats 
+       add constraint UKhkhwgk6g04eysi4nhhrbd7xpp unique (id_flight)
+Hibernate: 
+    alter table reservation 
+       add constraint FKhp2ov7rtykhuxdhsdhcfw9o34 
+       foreign key (id_flight) 
+       references flight (id_flight)
+Hibernate: 
+    alter table reservation 
+       add constraint FK6bq575oahjeam2l64sj9dhq9a 
+       foreign key (id_passenger) 
+       references passenger (id_passenger)
+Hibernate: 
+    alter table seats 
+       add constraint FKg5fm83qvi01rqw5u8lerqukke 
+       foreign key (id_flight) 
+       references flight (id_flight)
+2026-05-08T23:06:44.983Z  INFO 1 --- [travelo_backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-08T23:06:45.960Z  INFO 1 --- [travelo_backend] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-08T23:06:48.675Z  WARN 1 --- [travelo_backend] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-08T23:06:50.069Z  INFO 1 --- [travelo_backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-08T23:06:50.162Z  INFO 1 --- [travelo_backend] [           main] c.e.t.TraveloBackendApplication          : Started TraveloBackendApplication in 19.558 seconds (process running for 21.347)
+2026-05-08T23:06:54.823Z  INFO 1 --- [travelo_backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-08T23:06:54.824Z  INFO 1 --- [travelo_backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-08T23:06:54.826Z  INFO 1 --- [travelo_backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+
+exit code: 0

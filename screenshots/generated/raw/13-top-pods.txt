@@ -1,0 +1,10 @@
+$ kubectl top pods -n travelo
+
+NAME                        CPU(cores)   MEMORY(bytes)   
+backend-6778d5f589-7l788    3m           241Mi           
+backend-6778d5f589-qbks9    3m           248Mi           
+frontend-86bd6d4cd6-67bw8   1m           7Mi             
+frontend-86bd6d4cd6-xmb4k   1m           8Mi             
+mysql-0                     11m          386Mi
+
+exit code: 0

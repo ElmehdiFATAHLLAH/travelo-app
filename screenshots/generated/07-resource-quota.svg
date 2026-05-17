@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380">
+  <rect width="100%" height="100%" rx="0" fill="#101418"/>
+  <rect x="0" y="0" width="900" height="44" fill="#1f2933"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="88" y="28" class="title">07-resource-quota</text>
+  <style>
+    .title { fill: #e5edf5; font: 600 15px monospace; }
+    .mono { fill: #d7e0ea; font: 14px monospace; white-space: pre; }
+  </style>
+  <text x="24" y="68" class="mono">$ kubectl describe quota travelo-resource-quota -n travelo</text><text x="24" y="86" class="mono"></text><text x="24" y="104" class="mono">Name:                   travelo-resource-quota</text><text x="24" y="122" class="mono">Namespace:              travelo</text><text x="24" y="140" class="mono">Resource                Used    Hard</text><text x="24" y="158" class="mono">--------                ----    ----</text><text x="24" y="176" class="mono">limits.cpu              3500m   4</text><text x="24" y="194" class="mono">limits.memory           3Gi     4Gi</text><text x="24" y="212" class="mono">persistentvolumeclaims  1       4</text><text x="24" y="230" class="mono">pods                    5       12</text><text x="24" y="248" class="mono">requests.cpu            850m    2</text><text x="24" y="266" class="mono">requests.memory         1536Mi  2Gi</text><text x="24" y="284" class="mono">services                3       10</text><text x="24" y="302" class="mono"></text><text x="24" y="320" class="mono">exit code: 0</text><text x="24" y="338" class="mono">captured: 2026-05-09 00:26:46</text>
+</svg>

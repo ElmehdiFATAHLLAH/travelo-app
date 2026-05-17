@@ -1,0 +1,15 @@
+$ kubectl describe quota travelo-resource-quota -n travelo
+
+Name:                   travelo-resource-quota
+Namespace:              travelo
+Resource                Used    Hard
+--------                ----    ----
+limits.cpu              3500m   4
+limits.memory           3Gi     4Gi
+persistentvolumeclaims  1       4
+pods                    5       12
+requests.cpu            850m    2
+requests.memory         1536Mi  2Gi
+services                3       10
+
+exit code: 0

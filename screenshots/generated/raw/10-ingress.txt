@@ -1,0 +1,23 @@
+$ kubectl describe ingress travelo-ingress -n travelo
+
+Name:             travelo-ingress
+Labels:           <none>
+Namespace:        travelo
+Address:          192.168.49.2
+Ingress Class:    nginx
+Default backend:  <default>
+Rules:
+  Host                 Path  Backends
+  ----                 ----  --------
+  frontend.exam.local  
+                       /   frontend:80 (10.244.0.23:80,10.244.0.24:80)
+  backend.exam.local   
+                       /   backend:8080 (10.244.0.21:8080,10.244.0.22:8080)
+Annotations:           nginx.ingress.kubernetes.io/proxy-read-timeout: 60
+                       nginx.ingress.kubernetes.io/proxy-send-timeout: 60
+Events:
+  Type    Reason  Age                From                      Message
+  ----    ------  ----               ----                      -------
+  Normal  Sync    22m (x2 over 22m)  nginx-ingress-controller  Scheduled for sync
+
+exit code: 0

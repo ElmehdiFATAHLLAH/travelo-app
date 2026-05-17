@@ -1,0 +1,45 @@
+namespace: travelo-helm
+
+frontend:
+  image: elmehdift37/travelo-frontend:1.0
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+backend:
+  image: elmehdift37/travelo-backend:1.0
+  replicas: 2
+  resources:
+    requests:
+      cpu: 200m
+      memory: 384Mi
+    limits:
+      cpu: 750m
+      memory: 768Mi
+
+mysql:
+  image: mysql:8.0
+  database: travelo_db
+  user: travelo
+  password: travelo123
+  rootPassword: password
+  storage: 2Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  frontendHost: frontend.helm.local
+  backendHost: backend.helm.local
+

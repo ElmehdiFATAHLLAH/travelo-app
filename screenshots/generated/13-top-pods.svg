@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="290" viewBox="0 0 900 290">
+  <rect width="100%" height="100%" rx="0" fill="#101418"/>
+  <rect x="0" y="0" width="900" height="44" fill="#1f2933"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="88" y="28" class="title">13-top-pods</text>
+  <style>
+    .title { fill: #e5edf5; font: 600 15px monospace; }
+    .mono { fill: #d7e0ea; font: 14px monospace; white-space: pre; }
+  </style>
+  <text x="24" y="68" class="mono">$ kubectl top pods -n travelo</text><text x="24" y="86" class="mono"></text><text x="24" y="104" class="mono">NAME                        CPU(cores)   MEMORY(bytes)   </text><text x="24" y="122" class="mono">backend-6778d5f589-7l788    3m           241Mi           </text><text x="24" y="140" class="mono">backend-6778d5f589-qbks9    3m           248Mi           </text><text x="24" y="158" class="mono">frontend-86bd6d4cd6-67bw8   1m           7Mi             </text><text x="24" y="176" class="mono">frontend-86bd6d4cd6-xmb4k   1m           8Mi             </text><text x="24" y="194" class="mono">mysql-0                     11m          386Mi</text><text x="24" y="212" class="mono"></text><text x="24" y="230" class="mono">exit code: 0</text><text x="24" y="248" class="mono">captured: 2026-05-09 00:26:48</text>
+</svg>

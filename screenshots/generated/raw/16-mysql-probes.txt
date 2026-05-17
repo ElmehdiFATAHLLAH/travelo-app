@@ -1,0 +1,84 @@
+$ kubectl describe pod mysql-0 -n travelo
+
+Name:             mysql-0
+Namespace:        travelo
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Sat, 09 May 2026 00:03:48 +0100
+Labels:           app=mysql
+                  apps.kubernetes.io/pod-index=0
+                  controller-revision-hash=mysql-779d8f76b6
+                  statefulset.kubernetes.io/pod-name=mysql-0
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.25
+IPs:
+  IP:           10.244.0.25
+Controlled By:  StatefulSet/mysql
+Containers:
+  mysql:
+    Container ID:   docker://befcebe63c60e8f516002dcc0217313b20eee65b7edb0c9e2cef9abb00a97f55
+    Image:          mysql:8.0
+    Image ID:       docker-pullable://mysql@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
+    Port:           3306/TCP (mysql)
+    Host Port:      0/TCP (mysql)
+    State:          Running
+      Started:      Sat, 09 May 2026 00:05:55 +0100
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     1
+      memory:  1Gi
+    Requests:
+      cpu:      250m
+      memory:   512Mi
+    Liveness:   exec [mysqladmin ping -h 127.0.0.1] delay=30s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  exec [mysqladmin ping -h 127.0.0.1] delay=10s timeout=1s period=10s #success=1 #failure=3
+    Startup:    exec [mysqladmin ping -h 127.0.0.1] delay=0s timeout=1s period=5s #success=1 #failure=30
+    Environment:
+      MYSQL_DATABASE:       <set to the key 'MYSQL_DATABASE' of config map 'travelo-config'>   Optional: false
+      MYSQL_USER:           <set to the key 'MYSQL_USER' of config map 'travelo-config'>       Optional: false
+      MYSQL_PASSWORD:       <set to the key 'MYSQL_PASSWORD' in secret 'travelo-secret'>       Optional: false
+      MYSQL_ROOT_PASSWORD:  <set to the key 'MYSQL_ROOT_PASSWORD' in secret 'travelo-secret'>  Optional: false
+    Mounts:
+      /var/lib/mysql from mysql-data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-c9wrr (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  mysql-data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  mysql-data-mysql-0
+    ReadOnly:   false
+  kube-api-access-c9wrr:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  23m                default-scheduler  0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
+  Warning  FailedScheduling  23m (x2 over 23m)  default-scheduler  0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
+  Normal   Scheduled         23m                default-scheduler  Successfully assigned travelo/mysql-0 to minikube
+  Normal   Pulling           22m                kubelet            spec.containers{mysql}: Pulling image "mysql:8.0"
+  Normal   Pulled            20m                kubelet            spec.containers{mysql}: Successfully pulled image "mysql:8.0" in 50.375s (2m1.548s including waiting). Image size: 799071166 bytes.
+  Normal   Created           20m                kubelet            spec.containers{mysql}: Container created
+  Normal   Started           20m                kubelet            spec.containers{mysql}: Container started
+  Warning  Unhealthy         20m (x3 over 20m)  kubelet            spec.containers{mysql}: Startup probe failed: mysqladmin: connect to server at '127.0.0.1' failed
+error: 'Can't connect to MySQL server on '127.0.0.1:3306' (111)'
+Check that mysqld is running on 127.0.0.1 and that the port is 3306.
+You can check this by doing 'telnet 127.0.0.1 3306'
+
+exit code: 0

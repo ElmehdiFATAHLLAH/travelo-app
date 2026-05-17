@@ -1,0 +1,15 @@
+$ kubectl get pods -n monitoring
+
+NAME                                                        READY   STATUS    RESTARTS   AGE
+alertmanager-kube-prometheus-stack-alertmanager-0           2/2     Running   0          11m
+kube-prometheus-stack-grafana-67f6d47f5b-tzhx7              3/3     Running   0          11m
+kube-prometheus-stack-kube-state-metrics-58474dc949-86qbg   1/1     Running   0          11m
+kube-prometheus-stack-operator-54dcc5cffb-lzs55             1/1     Running   0          11m
+kube-prometheus-stack-prometheus-node-exporter-qn54f        1/1     Running   0          6m10s
+loki-0                                                      2/2     Running   0          10m
+loki-canary-v6qnm                                           1/1     Running   0          10m
+loki-gateway-7dbfcfc68d-qzvnc                               1/1     Running   0          10m
+prometheus-kube-prometheus-stack-prometheus-0               2/2     Running   0          11m
+promtail-fr8sn                                              1/1     Running   0          10m
+
+exit code: 0

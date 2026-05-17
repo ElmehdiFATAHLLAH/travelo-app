@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1148" height="254" viewBox="0 0 1148 254">
+  <rect width="100%" height="100%" rx="0" fill="#101418"/>
+  <rect x="0" y="0" width="1148" height="44" fill="#1f2933"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="88" y="28" class="title">20-helm-monitoring-releases</text>
+  <style>
+    .title { fill: #e5edf5; font: 600 15px monospace; }
+    .mono { fill: #d7e0ea; font: 14px monospace; white-space: pre; }
+  </style>
+  <text x="24" y="68" class="mono">$ helm list -n monitoring</text><text x="24" y="86" class="mono"></text><text x="24" y="104" class="mono">NAME                 	NAMESPACE 	REVISION	UPDATED                                	STATUS  	CHART                       	APP VERSION</text><text x="24" y="122" class="mono">kube-prometheus-stack	monitoring	2       	2026-05-09 00:20:29.882453363 +0100 +01	deployed	kube-prometheus-stack-84.5.0	v0.90.1    </text><text x="24" y="140" class="mono">loki                 	monitoring	1       	2026-05-09 00:16:21.174933599 +0100 +01	deployed	loki-7.0.0                  	3.6.7      </text><text x="24" y="158" class="mono">promtail             	monitoring	1       	2026-05-09 00:16:26.156459123 +0100 +01	deployed	promtail-6.17.1             	3.5.1</text><text x="24" y="176" class="mono"></text><text x="24" y="194" class="mono">exit code: 0</text><text x="24" y="212" class="mono">captured: 2026-05-09 00:26:50</text>
+</svg>

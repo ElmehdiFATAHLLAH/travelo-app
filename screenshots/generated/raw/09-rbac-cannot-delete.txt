@@ -1,0 +1,5 @@
+$ kubectl auth can-i delete pods --as=system:serviceaccount:travelo:travelo-deployer -n travelo
+
+no
+
+exit code: 1

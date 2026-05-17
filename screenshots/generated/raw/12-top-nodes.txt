@@ -1,0 +1,6 @@
+$ kubectl top nodes
+
+NAME       CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+minikube   604m         7%       3643Mi          22%
+
+exit code: 0

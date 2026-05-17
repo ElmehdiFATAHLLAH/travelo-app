@@ -1,0 +1,6 @@
+$ kubectl get configmap loki-datasource -n monitoring
+
+NAME              DATA   AGE
+loki-datasource   1      2m44s
+
+exit code: 0

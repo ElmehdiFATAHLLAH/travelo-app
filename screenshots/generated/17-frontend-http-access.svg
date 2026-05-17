@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="488" viewBox="0 0 900 488">
+  <rect width="100%" height="100%" rx="0" fill="#101418"/>
+  <rect x="0" y="0" width="900" height="44" fill="#1f2933"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="88" y="28" class="title">17-frontend-http-access</text>
+  <style>
+    .title { fill: #e5edf5; font: 600 15px monospace; }
+    .mono { fill: #d7e0ea; font: 14px monospace; white-space: pre; }
+  </style>
+  <text x="24" y="68" class="mono">$ curl -I http://127.0.0.1:18080</text><text x="24" y="86" class="mono"></text><text x="24" y="104" class="mono">  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</text><text x="24" y="122" class="mono">                                 Dload  Upload   Total   Spent    Left  Speed</text><text x="24" y="140" class="mono"></text><text x="24" y="158" class="mono">  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0</text><text x="24" y="176" class="mono">  0  1008    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0</text><text x="24" y="194" class="mono">HTTP/1.1 200 OK</text><text x="24" y="212" class="mono">Server: nginx</text><text x="24" y="230" class="mono">Date: Fri, 08 May 2026 23:26:50 GMT</text><text x="24" y="248" class="mono">Content-Type: text/html</text><text x="24" y="266" class="mono">Content-Length: 1008</text><text x="24" y="284" class="mono">Last-Modified: Tue, 05 May 2026 17:52:03 GMT</text><text x="24" y="302" class="mono">Connection: keep-alive</text><text x="24" y="320" class="mono">ETag: &quot;69fa2e43-3f0&quot;</text><text x="24" y="338" class="mono">X-Frame-Options: DENY</text><text x="24" y="356" class="mono">X-Content-Type-Options: nosniff</text><text x="24" y="374" class="mono">X-XSS-Protection: 1; mode=block</text><text x="24" y="392" class="mono">Accept-Ranges: bytes</text><text x="24" y="410" class="mono"></text><text x="24" y="428" class="mono">exit code: 0</text><text x="24" y="446" class="mono">captured: 2026-05-09 00:26:50</text>
+</svg>

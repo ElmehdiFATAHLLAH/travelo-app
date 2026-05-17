@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="524" viewBox="0 0 900 524">
+  <rect width="100%" height="100%" rx="0" fill="#101418"/>
+  <rect x="0" y="0" width="900" height="44" fill="#1f2933"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="88" y="28" class="title">10-ingress</text>
+  <style>
+    .title { fill: #e5edf5; font: 600 15px monospace; }
+    .mono { fill: #d7e0ea; font: 14px monospace; white-space: pre; }
+  </style>
+  <text x="24" y="68" class="mono">$ kubectl describe ingress travelo-ingress -n travelo</text><text x="24" y="86" class="mono"></text><text x="24" y="104" class="mono">Name:             travelo-ingress</text><text x="24" y="122" class="mono">Labels:           &lt;none&gt;</text><text x="24" y="140" class="mono">Namespace:        travelo</text><text x="24" y="158" class="mono">Address:          192.168.49.2</text><text x="24" y="176" class="mono">Ingress Class:    nginx</text><text x="24" y="194" class="mono">Default backend:  &lt;default&gt;</text><text x="24" y="212" class="mono">Rules:</text><text x="24" y="230" class="mono">  Host                 Path  Backends</text><text x="24" y="248" class="mono">  ----                 ----  --------</text><text x="24" y="266" class="mono">  frontend.exam.local  </text><text x="24" y="284" class="mono">                       /   frontend:80 (10.244.0.23:80,10.244.0.24:80)</text><text x="24" y="302" class="mono">  backend.exam.local   </text><text x="24" y="320" class="mono">                       /   backend:8080 (10.244.0.21:8080,10.244.0.22:8080)</text><text x="24" y="338" class="mono">Annotations:           nginx.ingress.kubernetes.io/proxy-read-timeout: 60</text><text x="24" y="356" class="mono">                       nginx.ingress.kubernetes.io/proxy-send-timeout: 60</text><text x="24" y="374" class="mono">Events:</text><text x="24" y="392" class="mono">  Type    Reason  Age                From                      Message</text><text x="24" y="410" class="mono">  ----    ------  ----               ----                      -------</text><text x="24" y="428" class="mono">  Normal  Sync    22m (x2 over 22m)  nginx-ingress-controller  Scheduled for sync</text><text x="24" y="446" class="mono"></text><text x="24" y="464" class="mono">exit code: 0</text><text x="24" y="482" class="mono">captured: 2026-05-09 00:26:47</text>
+</svg>

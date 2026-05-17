@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="218" viewBox="0 0 900 218">
+  <rect width="100%" height="100%" rx="0" fill="#101418"/>
+  <rect x="0" y="0" width="900" height="44" fill="#1f2933"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="88" y="28" class="title">22-grafana-dashboard-configmap</text>
+  <style>
+    .title { fill: #e5edf5; font: 600 15px monospace; }
+    .mono { fill: #d7e0ea; font: 14px monospace; white-space: pre; }
+  </style>
+  <text x="24" y="68" class="mono">$ kubectl get configmap travelo-dashboard -n monitoring</text><text x="24" y="86" class="mono"></text><text x="24" y="104" class="mono">NAME                DATA   AGE</text><text x="24" y="122" class="mono">travelo-dashboard   1      11m</text><text x="24" y="140" class="mono"></text><text x="24" y="158" class="mono">exit code: 0</text><text x="24" y="176" class="mono">captured: 2026-05-09 00:26:51</text>
+</svg>

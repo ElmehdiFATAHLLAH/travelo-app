@@ -1,0 +1,28 @@
+$ kubectl get statefulset,daemonset,svc -n monitoring
+
+NAME                                                               READY   AGE
+statefulset.apps/alertmanager-kube-prometheus-stack-alertmanager   1/1     11m
+statefulset.apps/loki                                              1/1     10m
+statefulset.apps/prometheus-kube-prometheus-stack-prometheus       1/1     11m
+
+NAME                                                            DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+daemonset.apps/kube-prometheus-stack-prometheus-node-exporter   1         1         1       1            1           kubernetes.io/os=linux   11m
+daemonset.apps/loki-canary                                      1         1         1       1            1           <none>                   10m
+daemonset.apps/promtail                                         1         1         1       1            1           <none>                   10m
+
+NAME                                                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+service/alertmanager-operated                            ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   11m
+service/kube-prometheus-stack-alertmanager               ClusterIP   10.106.191.195   <none>        9093/TCP,8080/TCP            11m
+service/kube-prometheus-stack-grafana                    NodePort    10.107.61.164    <none>        80:30703/TCP                 11m
+service/kube-prometheus-stack-kube-state-metrics         ClusterIP   10.101.71.242    <none>        8080/TCP                     11m
+service/kube-prometheus-stack-operator                   ClusterIP   10.107.2.9       <none>        443/TCP                      11m
+service/kube-prometheus-stack-prometheus                 ClusterIP   10.98.135.198    <none>        9090/TCP,8080/TCP            11m
+service/kube-prometheus-stack-prometheus-node-exporter   ClusterIP   10.105.56.123    <none>        9100/TCP                     11m
+service/loki                                             ClusterIP   10.107.190.43    <none>        3100/TCP,9095/TCP            10m
+service/loki-canary                                      ClusterIP   10.97.159.7      <none>        3500/TCP                     10m
+service/loki-gateway                                     ClusterIP   10.105.68.229    <none>        80/TCP                       10m
+service/loki-headless                                    ClusterIP   None             <none>        3100/TCP                     10m
+service/loki-memberlist                                  ClusterIP   None             <none>        7946/TCP                     10m
+service/prometheus-operated                              ClusterIP   None             <none>        9090/TCP                     11m
+
+exit code: 0

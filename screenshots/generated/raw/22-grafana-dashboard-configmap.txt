@@ -1,0 +1,6 @@
+$ kubectl get configmap travelo-dashboard -n monitoring
+
+NAME                DATA   AGE
+travelo-dashboard   1      11m
+
+exit code: 0

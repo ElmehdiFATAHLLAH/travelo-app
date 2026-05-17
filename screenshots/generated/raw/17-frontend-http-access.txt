@@ -1,0 +1,21 @@
+$ curl -I http://127.0.0.1:18080
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  1008    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/1.1 200 OK
+Server: nginx
+Date: Fri, 08 May 2026 23:26:50 GMT
+Content-Type: text/html
+Content-Length: 1008
+Last-Modified: Tue, 05 May 2026 17:52:03 GMT
+Connection: keep-alive
+ETag: "69fa2e43-3f0"
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Accept-Ranges: bytes
+
+exit code: 0

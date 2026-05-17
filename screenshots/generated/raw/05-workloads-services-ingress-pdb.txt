@@ -1,0 +1,22 @@
+$ kubectl get deploy,statefulset,svc,ingress,pdb -n travelo
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/backend    2/2     2            2           22m
+deployment.apps/frontend   2/2     2            2           22m
+
+NAME                     READY   AGE
+statefulset.apps/mysql   1/1     22m
+
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/backend    ClusterIP   10.104.232.95   <none>        8080/TCP   22m
+service/frontend   ClusterIP   10.99.150.79    <none>        80/TCP     22m
+service/mysql      ClusterIP   None            <none>        3306/TCP   22m
+
+NAME                                        CLASS   HOSTS                                    ADDRESS        PORTS   AGE
+ingress.networking.k8s.io/travelo-ingress   nginx   frontend.exam.local,backend.exam.local   192.168.49.2   80      22m
+
+NAME                                      MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+poddisruptionbudget.policy/backend-pdb    1               N/A               1                     22m
+poddisruptionbudget.policy/frontend-pdb   1               N/A               1                     22m
+
+exit code: 0

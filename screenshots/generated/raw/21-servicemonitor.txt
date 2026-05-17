@@ -1,0 +1,20 @@
+$ kubectl get servicemonitor -n monitoring
+
+NAME                                             AGE
+kube-prometheus-stack-alertmanager               11m
+kube-prometheus-stack-apiserver                  11m
+kube-prometheus-stack-coredns                    11m
+kube-prometheus-stack-grafana                    11m
+kube-prometheus-stack-kube-controller-manager    11m
+kube-prometheus-stack-kube-etcd                  11m
+kube-prometheus-stack-kube-proxy                 11m
+kube-prometheus-stack-kube-scheduler             11m
+kube-prometheus-stack-kube-state-metrics         11m
+kube-prometheus-stack-kubelet                    11m
+kube-prometheus-stack-operator                   11m
+kube-prometheus-stack-prometheus                 11m
+kube-prometheus-stack-prometheus-node-exporter   11m
+loki                                             10m
+travelo-backend                                  11m
+
+exit code: 0

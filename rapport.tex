@@ -1,0 +1,488 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.2cm}
+\usepackage{graphicx}
+\usepackage{svg}
+\svgsetup{inkscapelatex=false}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{placeins}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Rapport DevOps - Travelo},
+    pdfauthor={Adam Ait Oufkir et El Mehdi Fatahllah}
+}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\lstset{
+    backgroundcolor=\color{lightgray},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray}
+}
+
+\title{
+    \normalsize Institut National des Postes et Télécommunication \\
+    Master Data \& IA \\
+    Conteneurisation et Orchestration des Conteneurs \\
+    Année universitaire 2025/2026 \\
+    \vspace{1.5cm}
+    \Huge \textbf{Rapport de Projet DevOps : Travelo} \\
+    \Large Conteneurisation Docker, orchestration Kubernetes et observabilité
+}
+\author{Adam Ait Oufkir \& El Mehdi Fatahllah}
+\date{}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\vfill
+\noindent\textbf{Dépôt GitHub :} \url{https://github.com/ElmehdiFATAHLLAH/travelo-app.git}
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Contexte du projet}
+
+Travelo est une application web de réservation de vols. L'architecture applicative est composée de trois parties :
+\begin{itemize}
+    \item \textbf{Frontend} : application React servie par Nginx.
+    \item \textbf{Backend} : API REST Spring Boot.
+    \item \textbf{Base de données} : MySQL 8.
+\end{itemize}
+
+L'objectif de ce travail est de documenter le cycle DevOps complet de l'application : conteneurisation avec Docker, exécution locale avec Docker Compose, publication sur registres Docker, déploiement bonus avec Docker Swarm, puis passage vers un déploiement Kubernetes complet, isolé dans un namespace, sécurisé avec RBAC, résilient grâce aux probes et aux PodDisruptionBudgets, et observable avec Prometheus, Grafana, Loki et Promtail.
+
+\subsection{Organisation du dépôt}
+
+Le dépôt contient les dossiers suivants :
+\begin{itemize}
+    \item \texttt{k8s/base/} : manifestes Kubernetes obligatoires pour le namespace \texttt{travelo}.
+    \item \texttt{k8s/monitoring/} : configuration Prometheus, Grafana, Loki et Promtail.
+    \item \texttt{k8s/helm/travelo/} : chart Helm bonus.
+    \item \texttt{k8s/gitops/} : exemple d'application Argo CD bonus.
+    \item \texttt{skaffold.yaml} : workflow bonus Build / Deploy automatisé.
+    \item \texttt{screenshots/volet1/} : captures extraites du rapport Word du Volet 1.
+    \item \texttt{screenshots/generated/} : preuves d'exécution utilisées dans ce rapport.
+\end{itemize}
+
+\input{rapport_volet1_final.tex}
+
+\section{Volet 2 : Déploiement et orchestration Kubernetes}
+
+\subsection{Préparation de l'environnement}
+
+Le cluster local a été créé avec \textbf{Minikube}. Ce choix est adapté au projet car Minikube fournit un environnement Kubernetes complet sur une machine locale, avec le support des objets nécessaires : Deployments, StatefulSets, Services, Ingress, ResourceQuotas, RBAC et métriques.
+
+Les add-ons \texttt{ingress} et \texttt{metrics-server} ont été activés afin de permettre l'accès HTTP externe et la collecte de métriques CPU/RAM.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/01-minikube-status.svg}
+    \caption{Statut du cluster Minikube}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/02-kubectl-nodes.svg}
+    \caption{Noeud Kubernetes local prêt}
+\end{figure}
+
+\subsection{Namespace travelo}
+
+Toutes les ressources applicatives sont placées dans un namespace dédié nommé \texttt{travelo}. Cette isolation simplifie la lecture des ressources, l'application des quotas, les règles RBAC et le filtrage des métriques/logs dans les outils d'observabilité.
+
+\begin{lstlisting}[language=bash, caption={Déploiement des manifestes Kubernetes}]
+kubectl apply -k k8s/base
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/03-namespace.svg}
+    \caption{Namespace travelo créé}
+\end{figure}
+
+\subsection{Configuration et secrets}
+
+La configuration est séparée en deux objets Kubernetes :
+\begin{itemize}
+    \item \textbf{ConfigMap \texttt{travelo-config}} : nom de la base, utilisateur MySQL, URL JDBC, paramètres JPA.
+    \item \textbf{Secret \texttt{travelo-secret}} : mots de passe MySQL et mot de passe de la datasource Spring.
+\end{itemize}
+
+Cette séparation évite de coder les paramètres directement dans les images Docker ou dans le code applicatif. Les Deployments consomment ensuite ces valeurs via \texttt{configMapKeyRef} et \texttt{secretKeyRef}.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/06-configmaps-secrets.svg}
+    \caption{ConfigMap et Secret du namespace travelo}
+\end{figure}
+
+\subsection{Base de données MySQL avec StatefulSet}
+
+La base de données est déployée avec un \texttt{StatefulSet}, car elle doit conserver son identité et ses données. Le service \texttt{mysql} est un service headless, ce qui donne une identité réseau stable au pod \texttt{mysql-0}. Les données sont stockées dans un \texttt{PersistentVolumeClaim} monté dans \texttt{/var/lib/mysql}.
+
+Les principaux choix techniques sont :
+\begin{itemize}
+    \item image \texttt{mysql:8.0};
+    \item un réplica, adapté à un environnement local Minikube;
+    \item stockage persistant de \texttt{2Gi};
+    \item requests/limits : \texttt{250m/1 CPU} et \texttt{512Mi/1Gi};
+    \item probes \texttt{startup}, \texttt{readiness} et \texttt{liveness} basées sur \texttt{mysqladmin ping}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/16-mysql-probes.svg}
+    \caption{MySQL : état du pod, PVC, ressources et probes}
+\end{figure}
+
+\subsection{Backend Spring Boot avec Deployment}
+
+Le backend est stateless : il ne stocke pas d'état local durable et peut donc être répliqué horizontalement. Il est déployé avec un \texttt{Deployment} de \textbf{2 réplicas}, exposé par un service \texttt{ClusterIP} nommé \texttt{backend} sur le port \texttt{8080}.
+
+Le déploiement utilise une stratégie \texttt{RollingUpdate} avec \texttt{maxUnavailable: 0} et \texttt{maxSurge: 1}. Cela permet de mettre à jour le backend sans retirer tous les pods disponibles en même temps. Les probes HTTP vérifient l'endpoint \texttt{/api/hello}.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/14-backend-probes.svg}
+    \caption{Backend : 2 réplicas, ressources et probes HTTP}
+\end{figure}
+
+\subsection{Frontend React avec Deployment}
+
+Le frontend est également stateless et déployé avec un \texttt{Deployment} de \textbf{2 réplicas}. Il est exposé en interne par le service \texttt{frontend} sur le port \texttt{80}. Les probes HTTP vérifient la route \texttt{/}, servie par Nginx.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/15-frontend-probes.svg}
+    \caption{Frontend : 2 réplicas, ressources et probes HTTP}
+\end{figure}
+
+\subsection{Réseau interne et services}
+
+Les communications internes s'appuient sur les services Kubernetes :
+\begin{itemize}
+    \item \texttt{mysql} : service headless pour le StatefulSet MySQL;
+    \item \texttt{backend} : service \texttt{ClusterIP} vers les pods Spring Boot;
+    \item \texttt{frontend} : service \texttt{ClusterIP} vers les pods Nginx/React.
+\end{itemize}
+
+Le backend accède à MySQL avec l'URL JDBC \texttt{jdbc:mysql://mysql:3306/travelo\_db}. Kubernetes résout automatiquement ce nom grâce au DNS interne du namespace.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/05-workloads-services-ingress-pdb.svg}
+    \caption{Deployments, StatefulSet, Services, Ingress et PDB}
+\end{figure}
+
+\subsection{Scalabilité et état des pods}
+
+Le frontend et le backend disposent chacun de 2 réplicas, conformément au cahier des charges. La capture suivante montre les pods en état \texttt{Running}, leur readiness et leur placement sur le noeud Minikube.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/04-pods-wide.svg}
+    \caption{Pods Travelo en exécution}
+\end{figure}
+
+\subsection{ResourceQuota et requests/limits}
+
+Un \texttt{ResourceQuota} limite la consommation totale du namespace \texttt{travelo} :
+\begin{itemize}
+    \item requests : \texttt{2 CPU} et \texttt{2Gi};
+    \item limits : \texttt{4 CPU} et \texttt{4Gi};
+    \item nombre maximal de pods, services et PVC.
+\end{itemize}
+
+Chaque composant définit aussi ses propres \texttt{requests} et \texttt{limits}. Cela rend le scheduling plus prévisible et évite qu'un composant consomme toutes les ressources du cluster.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/07-resource-quota.svg}
+    \caption{ResourceQuota appliqué au namespace travelo}
+\end{figure}
+
+\subsection{PodDisruptionBudget}
+
+Deux \texttt{PodDisruptionBudget} sont configurés : un pour le frontend et un pour le backend. Chaque PDB impose \texttt{minAvailable: 1}. Ainsi, lors d'une maintenance volontaire ou d'un drain de noeud, Kubernetes doit conserver au moins un pod disponible pour chaque partie stateless.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/05-workloads-services-ingress-pdb.svg}
+    \caption{PDB frontend-pdb et backend-pdb}
+\end{figure}
+
+\subsection{Sécurité RBAC}
+
+Le projet applique le principe du moindre privilège avec :
+\begin{itemize}
+    \item un \texttt{ServiceAccount} nommé \texttt{travelo-deployer};
+    \item un \texttt{Role} limité à la lecture des ressources utiles dans le namespace;
+    \item un \texttt{RoleBinding} qui lie ce rôle au ServiceAccount.
+\end{itemize}
+
+La validation montre que ce compte peut lire les pods, mais ne peut pas les supprimer. Cette preuve est importante car elle démontre que la restriction RBAC est réellement active.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/08-rbac-can-read.svg}
+    \caption{RBAC : lecture autorisée}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/09-rbac-cannot-delete.svg}
+    \caption{RBAC : suppression refusée}
+\end{figure}
+
+\subsection{Accès externe avec Ingress}
+
+L'accès HTTP externe est configuré avec l'Ingress Controller Nginx de Minikube. Deux noms de domaine locaux sont définis :
+\begin{itemize}
+    \item \texttt{frontend.exam.local} vers le service \texttt{frontend:80};
+    \item \texttt{backend.exam.local} vers le service \texttt{backend:8080}.
+\end{itemize}
+
+La commande \texttt{kubectl describe ingress} confirme l'adresse Minikube, les règles de routage et les endpoints backend associés.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/10-ingress.svg}
+    \caption{Ingress travelo-ingress et règles de routage}
+\end{figure}
+
+Des tests HTTP et navigateur ont ensuite validé que le frontend et le backend répondent correctement depuis l'environnement Kubernetes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{./screenshots/generated/30-frontend-browser.png}
+    \caption{Interface Travelo accessible depuis le navigateur}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{./screenshots/generated/31-backend-browser.png}
+    \caption{Endpoint backend \texttt{/api/hello} accessible depuis le navigateur}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/17-frontend-http-access.svg}
+    \caption{Validation HTTP du frontend}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/18-backend-http-access.svg}
+    \caption{Validation HTTP du backend}
+\end{figure}
+
+\subsection{Validation par kubectl et métriques}
+
+La validation opérationnelle a été réalisée avec \texttt{kubectl get}, \texttt{kubectl describe}, \texttt{kubectl logs} et \texttt{kubectl top}. Les captures suivantes montrent que les pods sont prêts, que les logs backend sont consultables et que les métriques CPU/RAM remontent correctement.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/11-backend-logs.svg}
+    \caption{Logs du backend Spring Boot}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/12-top-nodes.svg}
+    \caption{Métriques du noeud via metrics-server}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/13-top-pods.svg}
+    \caption{Métriques des pods Travelo}
+\end{figure}
+
+\FloatBarrier
+\section{Volet 3 : Observabilité et monitoring}
+
+\subsection{Monitoring de l'infrastructure}
+
+Le monitoring de l'infrastructure est assuré par le chart Helm \texttt{kube-prometheus-stack}. Il installe Prometheus, Grafana, Alertmanager, kube-state-metrics et node-exporter. Cette stack permet de superviser :
+\begin{itemize}
+    \item l'utilisation CPU et mémoire des noeuds;
+    \item l'état des pods et leurs redémarrages;
+    \item les métriques Kubernetes exposées par kube-state-metrics;
+    \item les ressources système du cluster local.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/19-monitoring-pods.svg}
+    \caption{Pods de la stack monitoring}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/20-helm-monitoring-releases.svg}
+    \caption{Releases Helm de monitoring installées}
+\end{figure}
+
+\subsection{Monitoring applicatif}
+
+Le backend Spring Boot expose des métriques applicatives grâce à Actuator et à Micrometer Prometheus. L'endpoint \texttt{/actuator/prometheus} est découvert par Prometheus via un \texttt{ServiceMonitor}.
+
+Le tableau de bord Grafana \textbf{Travelo Application Overview} centralise les métriques utiles : CPU par pod, mémoire par pod, redémarrages et logs associés au namespace \texttt{travelo}.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/21-servicemonitor.svg}
+    \caption{ServiceMonitor du backend Travelo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/22-grafana-dashboard-configmap.svg}
+    \caption{ConfigMap du dashboard Grafana Travelo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./screenshots/generated/33-grafana-dashboards-authenticated.png}
+    \caption{Grafana authentifié avec les dashboards disponibles}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./screenshots/generated/34-grafana-travelo-dashboard.png}
+    \caption{Dashboard Grafana Travelo : CPU, mémoire, redémarrages et logs}
+\end{figure}
+
+\subsection{Monitoring des logs}
+
+La centralisation des journaux est réalisée avec \textbf{Loki} et \textbf{Promtail}. Promtail collecte les logs des pods, enrichit les entrées avec des labels Kubernetes comme \texttt{namespace}, \texttt{pod} et \texttt{container}, puis les envoie à Loki. Grafana interroge ensuite Loki avec des requêtes LogQL.
+
+La requête principale utilisée pour l'application est :
+
+\begin{lstlisting}[language=bash, caption={Requête LogQL pour les logs Travelo}]
+{namespace="travelo"}
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/23-loki-datasource-configmap.svg}
+    \caption{Datasource Loki ajoutée à Grafana}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=\textwidth]{./screenshots/generated/24-loki-promtail.svg}
+    \caption{Loki et Promtail déployés dans le namespace monitoring}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./screenshots/generated/35-grafana-explore-logs.png}
+    \caption{Exploration des logs Travelo dans Grafana}
+\end{figure}
+
+\FloatBarrier
+\section{Bonus réalisés}
+
+\subsection{Skaffold}
+
+Le fichier \texttt{skaffold.yaml} automatise le cycle de développement en construisant les images frontend/backend puis en déployant les manifestes \texttt{k8s/base}. Il permet d'utiliser :
+
+\begin{lstlisting}[language=bash, caption={Workflow Skaffold}]
+skaffold dev
+skaffold run
+\end{lstlisting}
+
+\subsection{Helm Chart}
+
+Un chart Helm complet est fourni dans \texttt{k8s/helm/travelo}. Il reprend les composants principaux de l'application et les rend paramétrables via \texttt{values.yaml} : namespace \texttt{travelo-helm}, images, réplicas, ressources, MySQL et Ingress.
+
+\begin{lstlisting}[language=bash, caption={Déploiement Helm bonus}]
+helm upgrade --install travelo k8s/helm/travelo --namespace travelo-helm --create-namespace
+\end{lstlisting}
+
+\subsection{GitOps avec Argo CD}
+
+Le dossier \texttt{k8s/gitops/} contient un exemple de manifeste \texttt{Application} Argo CD. Après remplacement de \texttt{repoURL} par le dépôt GitHub réel, Argo CD peut synchroniser automatiquement le cluster à partir du dépôt Git.
+
+\section{Synthèse de conformité}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{0.45\textwidth}|p{0.42\textwidth}|}
+\hline
+\textbf{Exigence} & \textbf{Preuve dans le projet} \\
+\hline
+Conteneurisation Docker & Volet 1, Dockerfiles frontend/backend, captures \texttt{01} à \texttt{21} du dossier \texttt{screenshots/volet1} \\
+\hline
+Exécution locale Docker Compose & Volet 1, captures \texttt{29} à \texttt{33} \\
+\hline
+Publication Docker Hub et registre privé & Volet 1, captures \texttt{10}, \texttt{11}, \texttt{20}, \texttt{21}, \texttt{35} à \texttt{47} \\
+\hline
+Déploiement Docker Swarm bonus & Volet 1, captures \texttt{48} à \texttt{56} \\
+\hline
+Cluster Kubernetes local & Minikube, captures \texttt{01} et \texttt{02} \\
+\hline
+Namespace \texttt{travelo} & \texttt{k8s/base/00-namespace.yaml}, capture \texttt{03} \\
+\hline
+Deployments frontend/backend & \texttt{06-backend-deployment.yaml}, \texttt{07-frontend-deployment.yaml} \\
+\hline
+StatefulSet base de données & \texttt{05-mysql-statefulset.yaml} \\
+\hline
+Services Kubernetes & Services \texttt{mysql}, \texttt{backend}, \texttt{frontend} \\
+\hline
+ConfigMap et Secrets & \texttt{03-configmap.yaml}, \texttt{04-secret.yaml} \\
+\hline
+2 réplicas frontend/backend & Captures \texttt{04}, \texttt{14}, \texttt{15} \\
+\hline
+ResourceQuota et requests/limits & \texttt{01-resourcequota.yaml}, captures \texttt{07}, \texttt{14}, \texttt{15}, \texttt{16} \\
+\hline
+Liveness, readiness, startup probes & Captures \texttt{14}, \texttt{15}, \texttt{16} \\
+\hline
+PodDisruptionBudget & \texttt{08-pdb.yaml}, capture \texttt{05} \\
+\hline
+RBAC restreint & \texttt{02-rbac.yaml}, captures \texttt{08} et \texttt{09} \\
+\hline
+Ingress & \texttt{09-ingress.yaml}, capture \texttt{10} \\
+\hline
+Accès navigateur & Captures \texttt{30} et \texttt{31} \\
+\hline
+Monitoring infrastructure & \texttt{kube-prometheus-stack}, captures \texttt{19}, \texttt{20}, \texttt{34} \\
+\hline
+Monitoring applicatif & Actuator, Micrometer, ServiceMonitor, captures \texttt{21}, \texttt{34} \\
+\hline
+Monitoring logs & Loki, Promtail, captures \texttt{23}, \texttt{24}, \texttt{35} \\
+\hline
+Lien du dépôt Git & \url{https://github.com/ElmehdiFATAHLLAH/travelo-app.git} \\
+\hline
+\end{tabular}
+\caption{Couverture des exigences du sujet}
+\end{table}
+
+\section{Conclusion}
+
+Le projet Travelo couvre l'ensemble du cycle demandé. Le Volet 1 documente la conteneurisation Docker des trois composants, l'utilisation d'un réseau et d'un volume persistant, les builds multi-stage, les scans Trivy, la publication sur Docker Hub, le registre privé local, Docker Compose et le déploiement bonus avec Docker Swarm.
+
+Le projet répond aussi aux exigences du volet Kubernetes : composants déployés dans le namespace \texttt{travelo}, Deployments pour les services stateless, StatefulSet pour MySQL, Services, ConfigMaps, Secrets, quotas, probes, PDB, RBAC et Ingress. Les captures montrent également la validation par \texttt{kubectl}, l'accès HTTP et l'accès navigateur.
+
+Le volet observabilité est couvert par une stack complète : Prometheus et Grafana pour les métriques infrastructure/applicatives, ServiceMonitor pour le backend Spring Boot, Loki et Promtail pour les logs. Les bonus Skaffold, Helm et GitOps sont également préparés dans le dépôt, ce qui améliore la qualité DevOps globale du rendu.
+
+\end{document}
